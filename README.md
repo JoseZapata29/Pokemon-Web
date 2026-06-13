@@ -15,7 +15,8 @@ Este proyecto fue creado como práctica de desarrollo web, consumo de APIs, mani
 > Agrega aquí una captura de pantalla del proyecto cuando lo subas a GitHub.
 
 ```markdown
-![Vista previa del proyecto](./assets/preview.png)
+<img width="1902" height="941" alt="image" src="https://github.com/user-attachments/assets/2651c33d-9d8b-4352-8533-664821995e9e" />
+
 ```
 
 ---
