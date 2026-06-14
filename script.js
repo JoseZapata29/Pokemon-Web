@@ -9,6 +9,9 @@ const pokemonAliases = {
   "wormadam": "wormadam-plant"
 };
 
+// Guarda datos ya consultados para no repetir llamadas a la API
+const pokemonCache = {};
+
 async function cargarListaPokemon() {
   try {
     const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1300");
@@ -21,7 +24,7 @@ async function cargarListaPokemon() {
         name: pokemon.name,
         displayName: limpiarNombre(pokemon.name),
         id: id,
-        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+        url: pokemon.url
       };
     });
 
@@ -44,7 +47,30 @@ function limpiarNombre(name) {
     .join(" ");
 }
 
-function mostrarSugerencias() {
+async function obtenerDatosPokemon(nombre) {
+  if (pokemonCache[nombre]) {
+    return pokemonCache[nombre];
+  }
+
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${nombre}`);
+  const data = await response.json();
+
+  pokemonCache[nombre] = data;
+
+  return data;
+}
+
+function obtenerImagenPokemon(data) {
+  return (
+    data.sprites.front_default ||
+    data.sprites.other?.["official-artwork"]?.front_default ||
+    data.sprites.other?.home?.front_default ||
+    data.sprites.other?.dream_world?.front_default ||
+    fallbackImage
+  );
+}
+
+async function mostrarSugerencias() {
   const input = document.getElementById("pokemonInput");
   const suggestions = document.getElementById("suggestions");
 
@@ -56,8 +82,15 @@ function mostrarSugerencias() {
     return;
   }
 
+  suggestions.innerHTML = `
+    <div class="suggestion-item no-result">
+      Cargando...
+    </div>
+  `;
+  suggestions.style.display = "block";
+
   const resultados = pokemonList
-    .filter(pokemon => 
+    .filter(pokemon =>
       pokemon.name.toLowerCase().startsWith(texto) ||
       pokemon.displayName.toLowerCase().startsWith(texto)
     )
@@ -69,21 +102,41 @@ function mostrarSugerencias() {
         No se encontraron Pokémon
       </div>
     `;
-    suggestions.style.display = "block";
     return;
   }
 
-  suggestions.innerHTML = resultados.map(pokemon => `
-  <div class="suggestion-item" onclick="seleccionarPokemon('${pokemon.name}')">
-    <img 
-      src="${pokemon.image}" 
-      alt="${pokemon.displayName}"
-      onerror="this.onerror=null; this.src='${fallbackImage}'"
-    >
-    <span>${pokemon.displayName}</span>
-    <small>#${pokemon.id}</small>
-  </div>
-`).join("");
+  const resultadosConImagen = await Promise.all(
+    resultados.map(async (pokemon) => {
+      try {
+        const data = await obtenerDatosPokemon(pokemon.name);
+        const image = obtenerImagenPokemon(data);
+
+        return {
+          ...pokemon,
+          image: image
+        };
+
+      } catch (error) {
+        return {
+          ...pokemon,
+          image: fallbackImage
+        };
+      }
+    })
+  );
+
+  suggestions.innerHTML = resultadosConImagen.map(pokemon => `
+    <div class="suggestion-item" onclick="seleccionarPokemon('${pokemon.name}')">
+      <img 
+        src="${pokemon.image}" 
+        alt="${pokemon.displayName}"
+        onerror="this.onerror=null; this.src='${fallbackImage}'"
+      >
+      <span>${pokemon.displayName}</span>
+      <small>#${pokemon.id}</small>
+    </div>
+  `).join("");
+
   suggestions.style.display = "block";
 }
 
@@ -114,24 +167,17 @@ async function buscarPokemon(nombreSeleccionado = null) {
   }
 
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-
-    if (!response.ok) {
-      pokemonCard.innerHTML = "<p>Pokémon no encontrado.</p>";
-      return;
-    }
-
-    const data = await response.json();
+    const data = await obtenerDatosPokemon(pokemonName);
 
     let name = limpiarNombre(data.name);
 
     const id = data.id;
 
-   const image =
-  data.sprites.other?.["official-artwork"]?.front_default ||
-  data.sprites.other?.home?.front_default ||
-  data.sprites.front_default ||
-  fallbackImage;
+    const image =
+      data.sprites.other?.["official-artwork"]?.front_default ||
+      data.sprites.other?.home?.front_default ||
+      data.sprites.front_default ||
+      fallbackImage;
 
     const abilities = data.abilities
       .map(ability => ability.ability.name)
@@ -188,11 +234,11 @@ async function buscarPokemon(nombreSeleccionado = null) {
           <p class="pokemon-id">#${id}</p>
 
           <img 
-  class="pokemon-img" 
-  src="${image}" 
-  alt="${name}"
-  onerror="this.onerror=null; this.src='${fallbackImage}'"
->
+            class="pokemon-img" 
+            src="${image}" 
+            alt="${name}"
+            onerror="this.onerror=null; this.src='${fallbackImage}'"
+          >
 
           <div class="type-container">
             ${data.types.map(type => `
@@ -216,7 +262,7 @@ async function buscarPokemon(nombreSeleccionado = null) {
     `;
 
   } catch (error) {
-    pokemonCard.innerHTML = "<p>Error al conectar con la API.</p>";
+    pokemonCard.innerHTML = "<p>Pokémon no encontrado o error al conectar con la API.</p>";
     console.log(error);
   }
 }
