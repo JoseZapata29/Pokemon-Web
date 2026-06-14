@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mi Pokedex</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+
+        <h1>Pokedex</h1>
+
+        <div class="search-box">
+  <div class="input-wrapper">
+    <input type="text" id="pokemonInput" placeholder="Escribe un Pokémon">
+    <div id="suggestions" class="suggestions"></div>
+  </div>
+
+  <button onclick="buscarPokemon()">Buscar</button>
+</div>
+
+        <div id="pokemonCard" class="card"></div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
