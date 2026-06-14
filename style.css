@@ -1,0 +1,330 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #7a0000, #c40000, #e3350d);
+  min-height: 100vh;
+  text-align: center;
+  padding: 30px;
+  margin: 0;
+}
+
+h1 {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 60px;
+  color: #ffcb05;
+  letter-spacing: 3px;
+  text-shadow:
+    3px 3px 0 #2a75bb,
+    6px 6px 0 #1d3f73;
+}
+
+.search-box {
+  margin-bottom: 30px;
+}
+
+input {
+  padding: 14px;
+  width: 260px;
+  border: 3px solid #2a75bb;
+  border-radius: 15px;
+  font-size: 16px;
+  outline: none;
+}
+
+button {
+  padding: 14px 20px;
+  background-color: #2a75bb;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #1d3f73;
+  transform: scale(1.05);
+}
+
+.card {
+  background-color: white;
+  max-width: 900px;
+  margin: auto;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+.pokemon-layout {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pokemon-info {
+  flex: 1;
+  border-right: 2px solid #eeeeee;
+  padding-right: 30px;
+}
+
+.pokemon-name {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 42px;
+  color: #1d3f73;
+  letter-spacing: 2px;
+  margin-bottom: 0;
+}
+
+.pokemon-id {
+  font-size: 26px;
+  color: #e3350d;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.pokemon-img {
+  width: 230px;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.25));
+}
+
+.type-container {
+  margin: 15px 0;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  margin: 5px;
+  text-transform: uppercase;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.abilities-box {
+  background-color: #fff8d6;
+  border: 2px solid #ffcb05;
+  border-radius: 18px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.abilities-box h3 {
+  margin: 0;
+  color: #7a4b00;
+}
+
+.abilities-box p {
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #5c3b00;
+}
+
+.pokemon-stats {
+  flex: 1;
+  text-align: left;
+}
+
+.pokemon-stats h3 {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 34px;
+  text-align: center;
+  color: #1d3f73;
+  letter-spacing: 2px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  background-color: #f8f8f8;
+  padding: 12px;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.stat-icon {
+  width: 45px;
+  height: 45px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 22px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: #1d3f73;
+  margin-bottom: 6px;
+}
+
+.stat-header strong {
+  font-size: 22px;
+}
+
+.stat-bar {
+  width: 100%;
+  height: 12px;
+  background-color: #ddd;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+  border-radius: 20px;
+}
+
+/* Colores de estadísticas */
+.hp .stat-fill {
+  background: linear-gradient(90deg, #ff416c, #ff4b2b);
+}
+
+.attack .stat-fill {
+  background: linear-gradient(90deg, #ff7b00, #ffb000);
+}
+
+.defense .stat-fill {
+  background: linear-gradient(90deg, #f6c90e, #ffdd57);
+}
+
+.special-attack .stat-fill {
+  background: linear-gradient(90deg, #2196f3, #21cbf3);
+}
+
+.special-defense .stat-fill {
+  background: linear-gradient(90deg, #2ecc71, #7bed9f);
+}
+
+.speed .stat-fill {
+  background: linear-gradient(90deg, #8e44ad, #c56cf0);
+}
+
+/* Colores por tipo */
+.normal { background-color: #a8a77a; }
+.fire { background-color: #ee8130; }
+.water { background-color: #6390f0; }
+.electric { background-color: #f7d02c; color: #333; }
+.grass { background-color: #7ac74c; }
+.ice { background-color: #96d9d6; color: #333; }
+.fighting { background-color: #c22e28; }
+.poison { background-color: #a33ea1; }
+.ground { background-color: #e2bf65; color: #333; }
+.flying { background-color: #a98ff3; }
+.psychic { background-color: #f95587; }
+.bug { background-color: #a6b91a; }
+.rock { background-color: #b6a136; }
+.ghost { background-color: #735797; }
+.dragon { background-color: #6f35fc; }
+.dark { background-color: #705746; }
+.steel { background-color: #b7b7ce; color: #333; }
+.fairy { background-color: #d685ad; }
+
+/* Responsive para celular */
+@media (max-width: 768px) {
+  .pokemon-layout {
+    flex-direction: column;
+  }
+
+  .pokemon-info {
+    border-right: none;
+    border-bottom: 2px solid #eeeeee;
+    padding-right: 0;
+    padding-bottom: 20px;
+  }
+
+  h1 {
+    font-size: 45px;
+  }
+
+  .pokemon-name {
+    font-size: 34px;
+  }
+}
+
+.search-box {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 300px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.suggestions {
+  display: none;
+  position: absolute;
+  top: 55px;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 3px solid #2a75bb;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+  z-index: 100;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+  background-color: #ffcb05;
+  transform: scale(1.02);
+}
+
+.suggestion-item img {
+  width: 42px;
+  height: 42px;
+  image-rendering: pixelated;
+}
+
+.suggestion-item span {
+  flex: 1;
+  font-weight: bold;
+  text-transform: capitalize;
+  color: #1d3f73;
+  text-align: left;
+}
+
+.suggestion-item small {
+  font-weight: bold;
+  color: #e3350d;
+}
+
+.no-result {
+  justify-content: center;
+  font-weight: bold;
+  color: #e3350d;
+}
