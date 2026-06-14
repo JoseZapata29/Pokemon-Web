@@ -12,6 +12,50 @@ const pokemonAliases = {
 // Guarda datos ya consultados para no repetir llamadas a la API
 const pokemonCache = {};
 
+const typeCache = {};
+
+const typeNamesES = {
+  normal: "Normal",
+  fire: "Fuego",
+  water: "Agua",
+  electric: "Eléctrico",
+  grass: "Planta",
+  ice: "Hielo",
+  fighting: "Lucha",
+  poison: "Veneno",
+  ground: "Tierra",
+  flying: "Volador",
+  psychic: "Psíquico",
+  bug: "Bicho",
+  rock: "Roca",
+  ghost: "Fantasma",
+  dragon: "Dragón",
+  dark: "Siniestro",
+  steel: "Acero",
+  fairy: "Hada"
+};
+
+const allTypes = [
+  "normal",
+  "fire",
+  "water",
+  "electric",
+  "grass",
+  "ice",
+  "fighting",
+  "poison",
+  "ground",
+  "flying",
+  "psychic",
+  "bug",
+  "rock",
+  "ghost",
+  "dragon",
+  "dark",
+  "steel",
+  "fairy"
+];
+
 async function cargarListaPokemon() {
   try {
     const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1300");
@@ -58,6 +102,69 @@ async function obtenerDatosPokemon(nombre) {
   pokemonCache[nombre] = data;
 
   return data;
+}
+
+async function obtenerDatosTipo(tipo) {
+  if (typeCache[tipo]) {
+    return typeCache[tipo];
+  }
+
+  const response = await fetch(`https://pokeapi.co/api/v2/type/${tipo}`);
+  const data = await response.json();
+
+  typeCache[tipo] = data;
+
+  return data;
+}
+
+async function calcularDebilidades(pokemonTypes) {
+  const multipliers = {};
+
+  allTypes.forEach(type => {
+    multipliers[type] = 1;
+  });
+
+  for (const defensiveType of pokemonTypes) {
+    const typeData = await obtenerDatosTipo(defensiveType);
+    const relations = typeData.damage_relations;
+
+    relations.double_damage_from.forEach(type => {
+      multipliers[type.name] *= 2;
+    });
+
+    relations.half_damage_from.forEach(type => {
+      multipliers[type.name] *= 0.5;
+    });
+
+    relations.no_damage_from.forEach(type => {
+      multipliers[type.name] *= 0;
+    });
+  }
+
+  const weaknesses = Object.entries(multipliers)
+    .filter(([type, multiplier]) => multiplier > 1)
+    .map(([type, multiplier]) => {
+      return {
+        type: type,
+        multiplier: multiplier
+      };
+    })
+    .sort((a, b) => b.multiplier - a.multiplier);
+
+  return weaknesses;
+}
+
+function crearHTMLDebilidades(weaknesses) {
+  if (weaknesses.length === 0) {
+    return `<p class="no-weakness">No tiene debilidades de tipo.</p>`;
+  }
+
+  return weaknesses.map(weakness => `
+    <span class="type-badge ${weakness.type} weakness-badge">
+      ${typeNamesES[weakness.type]}
+      <strong>x${weakness.multiplier}</strong>
+    </span>
+  `).join("");
 }
 
 function obtenerImagenPokemon(data) {
@@ -183,6 +290,12 @@ async function buscarPokemon(nombreSeleccionado = null) {
       .map(ability => ability.ability.name)
       .join(", ");
 
+      const pokemonTypes = data.types.map(typeInfo => typeInfo.type.name);
+
+const weaknesses = await calcularDebilidades(pokemonTypes);
+
+const weaknessesHTML = crearHTMLDebilidades(weaknesses);
+
     const statNames = {
       hp: "HP",
       attack: "Ataque",
@@ -247,6 +360,13 @@ async function buscarPokemon(nombreSeleccionado = null) {
               </span>
             `).join("")}
           </div>
+
+          <div class="weaknesses-box">
+  <h3>Debilidades</h3>
+  <div class="weaknesses-list">
+    ${weaknessesHTML}
+  </div>
+</div>
 
           <div class="abilities-box">
             <h3>Habilidades</h3>
