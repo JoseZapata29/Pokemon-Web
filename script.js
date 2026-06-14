@@ -1,5 +1,7 @@
 let pokemonList = [];
 
+const fallbackImage = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+
 const pokemonAliases = {
   "mimikyu": "mimikyu-disguised",
   "giratina": "giratina-altered",
@@ -12,8 +14,8 @@ async function cargarListaPokemon() {
     const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1300");
     const data = await response.json();
 
-    pokemonList = data.results.map((pokemon, index) => {
-      const id = index + 1;
+    pokemonList = data.results.map((pokemon) => {
+      const id = obtenerIdDesdeUrl(pokemon.url);
 
       return {
         name: pokemon.name,
@@ -30,10 +32,16 @@ async function cargarListaPokemon() {
   }
 }
 
-function limpiarNombre(name) {
-  const baseName = name.split("-")[0];
+function obtenerIdDesdeUrl(url) {
+  const partes = url.split("/").filter(Boolean);
+  return partes[partes.length - 1];
+}
 
-  return baseName.charAt(0).toUpperCase() + baseName.slice(1);
+function limpiarNombre(name) {
+  return name
+    .split("-")
+    .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .join(" ");
 }
 
 function mostrarSugerencias() {
@@ -66,13 +74,16 @@ function mostrarSugerencias() {
   }
 
   suggestions.innerHTML = resultados.map(pokemon => `
-    <div class="suggestion-item" onclick="seleccionarPokemon('${pokemon.name}')">
-      <img src="${pokemon.image}" alt="${pokemon.displayName}">
-      <span>${pokemon.displayName}</span>
-      <small>#${pokemon.id}</small>
-    </div>
-  `).join("");
-
+  <div class="suggestion-item" onclick="seleccionarPokemon('${pokemon.name}')">
+    <img 
+      src="${pokemon.image}" 
+      alt="${pokemon.displayName}"
+      onerror="this.onerror=null; this.src='${fallbackImage}'"
+    >
+    <span>${pokemon.displayName}</span>
+    <small>#${pokemon.id}</small>
+  </div>
+`).join("");
   suggestions.style.display = "block";
 }
 
@@ -116,9 +127,11 @@ async function buscarPokemon(nombreSeleccionado = null) {
 
     const id = data.id;
 
-    const image =
-      data.sprites.other["official-artwork"].front_default ||
-      data.sprites.front_default;
+   const image =
+  data.sprites.other?.["official-artwork"]?.front_default ||
+  data.sprites.other?.home?.front_default ||
+  data.sprites.front_default ||
+  fallbackImage;
 
     const abilities = data.abilities
       .map(ability => ability.ability.name)
@@ -174,7 +187,12 @@ async function buscarPokemon(nombreSeleccionado = null) {
           <h2 class="pokemon-name">${name.toUpperCase()}</h2>
           <p class="pokemon-id">#${id}</p>
 
-          <img class="pokemon-img" src="${image}" alt="${name}">
+          <img 
+  class="pokemon-img" 
+  src="${image}" 
+  alt="${name}"
+  onerror="this.onerror=null; this.src='${fallbackImage}'"
+>
 
           <div class="type-container">
             ${data.types.map(type => `
